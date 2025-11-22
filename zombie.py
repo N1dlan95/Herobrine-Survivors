@@ -2,7 +2,7 @@ import pgzero
 import random
 from pgzero.builtins import Actor, animate, keyboard
 
-class zombies:
+class Zombies:
 
     zombie_frames = ["zombie-1", "zombie-2", "zombie-3", "zombie-4"]
 
@@ -11,8 +11,7 @@ class zombies:
         self.frame_index = 0
         self.animation_timer = 0
         self.animation_speed = 0.3  # troca de frame a cada 0.3s
-        self.speed = 1.2
-        return self
+        self.speed = 0.6
     
     def update_animation(self, dt):
         # Atualizar animação
@@ -39,7 +38,7 @@ class zombies:
         self.actor.draw()
 
 
-    def spawn_zombie():
+    def spawn_zombie(self):
         side = random.choice(['left', 'right', 'top', 'bottom'])
         if side == 'left':
             x = random.randint(0,50)
@@ -56,10 +55,11 @@ class zombies:
         value = x,y
         return value
     
-
-    def create_zombie_tsunami():
+    def create_zombie_tsunami(self):
+        zombieb = Zombies(0,0)
         tsunami = []
         for i in range(10):
-            entity = Actor('zombie-1', spawn_zombie())
+            entity = Zombies(zombieb.spawn_zombie()[0], zombieb.spawn_zombie()[1])
             tsunami.append(entity)
         return tsunami
+    
