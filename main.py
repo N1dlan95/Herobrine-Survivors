@@ -9,18 +9,33 @@ HEIGHT = 700
 TITLE = "Minecraft Survivor Test"
 
 # function to separate enemies, and not overlap. Generated with help from ChatGPT
-def separate_enemies(enemies):
+def separate_enemies(enemies,player):
     for i in range(len(enemies)):
         for j in range(i + 1, len(enemies)):
             a = enemies[i]
             b = enemies[j]
 
+            # separate enemy from player
+            pdx = player.x - a.actor.x
+            pdy = player.y - a.actor.y
+            pdist = math.hypot(pdx, pdy)
+            min_pdist = a.radius + player.radius
+            if pdist < min_pdist and pdist != 0:
+                poverlap = min_pdist - pdist
+                pnx = pdx / pdist
+                pny = pdy / pdist
+
+                # push the enemy away from the player
+                a.actor.x -= pnx * poverlap
+                a.actor.y -= pny * poverlap
+
+            # separate enemies from each other
             dx = b.actor.x - a.actor.x
             dy = b.actor.y - a.actor.y
             dist = math.hypot(dx, dy) # Note: math.hypot computes sqrt(dx*dx + dy*dy)
             min_dist = a.radius + b.radius
 
-            if dist < min_dist and dist != 0:
+            if dist < min_dist and dist != 0:# Note: create a normal vector
                 overlap = min_dist - dist
                 nx = dx / dist
                 ny = dy / dist
@@ -50,6 +65,7 @@ player.speed = 1
 player.size = (64, 64)
 frame_index = 0
 animation_timer = 0
+player.radius = 20  # raio para colisão
 
 def update_player_animation(dt):
     global frame_index, animation_timer
@@ -59,10 +75,10 @@ def update_player_animation(dt):
         frame_index = (frame_index + 1) % 4
         player.image = player.images[frame_index]
 
-#Update function ---------------------------ss---------------------------
+#Update function ------------------------------------------------------
 def update(dt):
     global frame_index, animation_timer, horda
-    separate_enemies(horda)
+    separate_enemies(horda, player)
 
     moving = False
 
