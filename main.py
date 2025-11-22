@@ -1,17 +1,37 @@
+import math
 import pgzero 
 import pgzrun
 from pgzero.builtins import Actor, animate, keyboard
 from zombie import Zombies
 
-#enemies = []
-#enemies.append(
-#for i in range(5):
-
-
-
 WIDTH = 900
 HEIGHT = 700
 TITLE = "Minecraft Survivor Test"
+
+# function to separate enemies, and not overlap. Generated with help from ChatGPT
+def separate_enemies(enemies):
+    for i in range(len(enemies)):
+        for j in range(i + 1, len(enemies)):
+            a = enemies[i]
+            b = enemies[j]
+
+            dx = b.actor.x - a.actor.x
+            dy = b.actor.y - a.actor.y
+            dist = math.hypot(dx, dy) # Note: math.hypot computes sqrt(dx*dx + dy*dy)
+            min_dist = a.radius + b.radius
+
+            if dist < min_dist and dist != 0:
+                overlap = min_dist - dist
+                nx = dx / dist
+                ny = dy / dist
+
+                # push each enemy 50% of the overlap
+                a.actor.x -= nx * overlap * 0.5
+                a.actor.y -= ny * overlap * 0.5
+                b.actor.x += nx * overlap * 0.5
+                b.actor.y += ny * overlap * 0.5
+
+
 
 #zombies
 zombieb = Zombies(0,0)
@@ -42,6 +62,7 @@ def update_player_animation(dt):
 #Update function ---------------------------ss---------------------------
 def update(dt):
     global frame_index, animation_timer, horda
+    separate_enemies(horda)
 
     moving = False
 

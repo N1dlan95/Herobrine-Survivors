@@ -12,6 +12,7 @@ class Zombies:
         self.animation_timer = 0
         self.animation_speed = 0.3  # troca de frame a cada 0.3s
         self.speed = 0.6
+        self.radius = 20  # raio para colisão
     
     def update_animation(self, dt):
         # Atualizar animação
@@ -41,17 +42,17 @@ class Zombies:
     def spawn_zombie(self):
         side = random.choice(['left', 'right', 'top', 'bottom'])
         if side == 'left':
-            x = random.randint(0,50)
+            x = random.randint(0,20)
             y = random.randint(0,600)
         elif side == 'right':
-            x = random.randint(750,800)
+            x = random.randint(780,800)
             y = random.randint(0,600)
         elif side == 'top':
             x = random.randint(0,800)
-            y = random.randint(0,50)
+            y = random.randint(0,20)
         else:  # bottom
             x = random.randint(0,800)
-            y = random.randint(550,600)  
+            y = random.randint(580,600)  
         value = x,y
         return value
     
