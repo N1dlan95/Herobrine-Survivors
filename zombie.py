@@ -7,11 +7,12 @@ class Zombies:
         self.actor = Actor("zombie-1", (x, y))
         self.actor.images = ["zombie-1", "zombie-2", "zombie-3", "zombie-4"]
         self.frame_index = 0
-        self.player = player #Improvisado
+        self.player = player #Improvisado-------------------
         self.animation_timer = 0
         self.animation_speed = 0.3  # troca de frame a cada 0.3s
         self.life = 13
         self.speed = 0.6
+        self.damage = 3
         self.radius = 18
         self.xp_value = random.randint(3,5)
         
@@ -77,7 +78,5 @@ class Zombies:
 
     def drop_Xp(self):
         self.player.gain_xp(self.xp_value)
-        print("Gained {} XP! Total XP: {}".format(self.xp_value, self.player.xp))
+        print("Gained {} XP! Total XP: {}".format(self.xp_value, self.player.xp))#test
         
-    def colliderect(self, other):
-        return self.actor.colliderect(other.actor)

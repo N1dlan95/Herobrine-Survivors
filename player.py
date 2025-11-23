@@ -5,7 +5,9 @@ class Player:
 
     def __init__(self, x, y):
         self.actor = Actor("steve-1", (x, y))
-        self.health = 20
+        self.max_health = 20
+        self.health = self.max_health
+        self.invulnerable = 0   # time until he can be hit again
         self.speed = 1.2
         self.actor.images = ["steve-1", "steve-2", "steve-3", "steve-4"]
         self.actor.height = 64
@@ -25,9 +27,12 @@ class Player:
 
     def level_up(self):
         self.level += 1
-        self.health += 0.5
+        if self.level % 2 == 0:
+            self.max_health += 1
+        if self.level % 3 == 0:
+            self.health += 0.5
         self.speed += 0.1
-        print("Level up! New level: {}".format(self.level))
+        print("Level up! New level: {}".format(self.level))#test
 
     def draw(self):
         self.actor.draw()
@@ -70,6 +75,13 @@ class Player:
 
     def receive_damage(self, damage):
         self.health -= damage
+        print("Player received {} damage! Current health: {}/{}".format(damage, self.health, self.max_health))#test
         if self.health < 0:
             self.health = 0
+            return "dead"
+        
+    def heal(self, amount):
+        self.health += amount
+        if self.health > self.max_health:
+            self.health = self.max_health
     

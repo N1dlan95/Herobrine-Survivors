@@ -1,4 +1,5 @@
 import math
+import random
 import pgzero 
 import pgzrun
 from pgzero.builtins import Actor, animate, keyboard, clock
@@ -19,16 +20,16 @@ for j in range(5):
         forest.append(
             Actor('grass_bg', topleft=(images.grass_bg.get_width() * i, images.grass_bg.get_height() * j))
         )
-
-chicken = Actor("frango_assado", topleft=(100, 100))
-
+chickens = []
+chicken_spawn_timer = 20.0
 
 
 #player
 player = Player(WIDTH//2, HEIGHT//2)
 arrows = []
 arrow_cooldown = 3.0
-texto = "Player level: {} \nXP: {}/{}".format(player.level, player.xp, (2*player.level + 7))
+texto_xp = "Player level: {} \nXP: {}/{}".format(player.level, player.xp, (2*player.level + 7))
+texto_vida = "Player Health: {}/{}".format(player.health, player.max_health)
 
 
 
@@ -77,10 +78,18 @@ zombieb = Zombies(0,0,player)
 horda_cooldown = 15.0
 horda = zombieb.create_zombie_tsunami(player)
 
+time = 0
+texto_tempo = "Time: {:.1f} s".format(time)
+texto_horda = "Horda em: {:.1f} s".format(horda_cooldown)
+
 #Update function ------------------------------------------------------
 def update(dt):
-    global player, horda, arrows, arrow_cooldown, horda_cooldown, texto
-    texto = "Player level: {} \nXP: {}/{}".format(player.level, player.xp, (2*player.level + 7))
+    global player, horda, arrows, arrow_cooldown, horda_cooldown, texto_xp, texto_vida, chicken_spawn_timer, chickens, texto_tempo, time
+    texto_xp = "Player level: {} \nXP: {}/{}".format(player.level, player.xp, (2*player.level + 7))
+    texto_vida = "Player Health: {}/{}".format(player.health, player.max_health)
+    texto_horda = "Horda em: {:.1f} s".format(horda_cooldown)
+    time += dt
+    texto_tempo = "Time: {:.1f} s".format(time)
     if horda_cooldown <= 0:
         new_horda = zombieb.create_zombie_tsunami(player)
         horda.extend(new_horda)
@@ -88,10 +97,41 @@ def update(dt):
     horda_cooldown -= dt
     separate_enemies(horda, player)
 
+
+    chicken_spawn_timer -= dt
+    if chicken_spawn_timer <= 0 and random.randint(0,10)% 2 == 0:
+        chicken = Actor("frango_assado", topleft=(random.randint(0, WIDTH),random.randint(0, HEIGHT)))
+        chicken.radius = 20
+        chicken.heal = 5
+        chickens.append(chicken)
+        chicken_spawn_timer = 20.0
+
+    for chicken in chickens[:]:
+        dx = chicken.x - player.actor.x
+        dy = chicken.y - player.actor.y
+        dist = math.hypot(dx, dy)
+
+        if dist < chicken.radius + player.radius:
+            chickens.remove(chicken)
+            player.heal(chicken.heal)
+            print("Player has been healed.") #test
+
+
+
     for zombie in horda:
         zombie.walking_zombie(dt, player)
         if zombie.life <= 0:
             horda.remove(zombie)
+        dx = zombie.actor.x - player.actor.x
+        dy = zombie.actor.y - player.actor.y
+        dist = math.hypot(dx, dy)
+
+        if dist < zombie.radius + player.radius and player.invulnerable <= 0:
+            if player.receive_damage(zombie.damage):
+                print("Player has died! Game Over.") #test
+            player.actor.image = "steve_damage"
+            player.invulnerable = 1.0  # 1.0 seconds of invulnerability
+        player.invulnerable -= dt
 
     # Moviment
     player.update_player(dt, keyboard)
@@ -110,8 +150,6 @@ def update(dt):
             arrows.remove(arr)
     
 
-    
-
 #Draw function 
 def draw():
     screen.clear()
@@ -125,9 +163,11 @@ def draw():
     for arr in arrows:
         arr.draw()
 
-
-    chicken.draw()
-    screen.draw.text(texto, (10, 10), color="white")
+    for chicken in chickens:
+        chicken.draw()
+    screen.draw.text(texto_xp, (10, 10), color="white")
+    screen.draw.text(texto_vida, (10, 50), color="white")
+    screen.draw.text(texto_tempo, (700, 10), color="white")
     
 
 
