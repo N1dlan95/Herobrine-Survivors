@@ -2,7 +2,8 @@ import pgzero
 from pgzero.builtins import Actor, animate, keyboard, clock
 from pygame import rect
 import math
-class Bow:
+
+class Bow:   #useless at now
 
 
     def __init__(self, x, y):
@@ -29,7 +30,7 @@ class arrow:
     def draw(self):
         self.actor.draw()
 
-    def update(self, enemies):
+    def update(self, enemies, sounds_are_on):
         # Move arrow
         self.actor.x += self.dx * self.speed
         self.actor.y += self.dy * self.speed
@@ -37,7 +38,7 @@ class arrow:
         # Check collision
         for enemy in enemies:
             if self.actor.colliderect(enemy.actor):
-                enemy.receive_damage(self.damage)
+                enemy.receive_damage(self.damage, sounds_are_on)
                 return True  # tell main game to remove this arrow
         
         return False

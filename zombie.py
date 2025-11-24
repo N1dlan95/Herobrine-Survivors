@@ -1,5 +1,5 @@
 import random
-from pgzero.builtins import Actor, animate, keyboard
+from pgzero.builtins import Actor, animate, keyboard,sounds
 
 class Zombies:
 
@@ -47,16 +47,16 @@ class Zombies:
         side = random.choice(['left', 'right', 'top', 'bottom'])
         if side == 'left':
             x = random.randint(0,20)
-            y = random.randint(0,700)
+            y = random.randint(0,600)
         elif side == 'right':
             x = random.randint(880,900)
-            y = random.randint(0,700)
+            y = random.randint(0,600)
         elif side == 'top':
             x = random.randint(0,900)
             y = random.randint(0,20)
         else:  # bottom
             x = random.randint(0,900)
-            y = random.randint(680,700)  
+            y = random.randint(580,600)  
         value = x,y
         return value
     
@@ -68,12 +68,15 @@ class Zombies:
             tsunami.append(entity)
         return tsunami
     
-    def receive_damage(self, damage):
+    def receive_damage(self, damage, sounds_are_on):
         self.life -= damage
         self.actor.image = "zombie_damage"
+        if sounds_are_on:
+            sounds.hit.play()
         if self.life < 0:
             self.life = 0
             self.drop_Xp()
+
 
 
     def drop_Xp(self):
